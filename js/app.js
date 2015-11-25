@@ -17,7 +17,7 @@ enemy.prototype.update = function(dt) {
     // all computers.
 
     //this.x = this.x + Math.random() * 500 * dt;
-    this.x = this.x + (Math.floor((Math.random() * 20)));
+    this.x = this.x + (Math.floor((Math.random() * 10)));
     if (this.x > 500) {
         this.x = 0; 
     }
@@ -52,6 +52,23 @@ player.prototype.handleInput = function (key) {
     }
 };
 
+player.prototype.collision = function() {
+for(var i = 0; i <= allEnemies.length; i++){
+       if (player.x < allEnemies[i].x + 50 && player.x + 50 > allEnemies[i].x && player.y
+         < allEnemies[i].y + 100 && player.y + 100 > allEnemies[i].y){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+};
+
+player.prototype.reset = function() {
+    player.x = 200;
+    player.y = 400;
+}
+
 player.prototype.update = function(dt) {
      if (this.x < 0) {
         this.x = 0;
@@ -62,12 +79,21 @@ player.prototype.update = function(dt) {
     else if (this.y > 400) {
         this.y = 400;
     }
+
+    if (this.y < 0) {
+        player.reset();
+    }
+
+    if (player.collision() == true) {
+        player.reset();
+    }
 };
 
 // Draw the enemy on the screen, required method for game
 player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
 
 var player = new player(200,400);
 var enemy1 = new enemy(-100,50);
