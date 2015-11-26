@@ -16,7 +16,7 @@ enemy.prototype.update = function(dt) {
     this.x = this.x + speedChoice * dt;
 
     //delete enemies that reach far side of screen and spawn new enemies
-    if (allEnemies.length < 5 && this.x -100 > 700) {
+    if (allEnemies.length < 7 && this.x -100 > 700) {
         allEnemies.splice(this, 1);
         allEnemies.push(new enemy(i));
     }
@@ -24,7 +24,7 @@ enemy.prototype.update = function(dt) {
     //collision detection
     for(var i = 0; i <= allEnemies.length; i++){
        if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y){
-        player.reset();
+        player.death();
         }
     }
 
@@ -40,7 +40,7 @@ var player = function(x,y) {
     this.sprite = 'images/char-boy.png';
 };
 
-
+//player functions
 player.prototype.handleInput = function (key) {
         switch (key){
         case 'left': this.x = this.x - 100;
@@ -59,6 +59,33 @@ player.prototype.reset = function() {
     player.y = 400;
 }
 
+player.prototype.score = function() {
+    if (this.y < 0) {
+        player.reset();
+        score = score +1;
+    }
+};
+
+player.prototype.death = function() {
+    player.reset();
+
+    lives = lives - 1;
+}
+
+player.prototype.stats = function() {
+    livesDisplay = "Lives: " + lives;
+    ctx.clearRect(0,0,200,50);
+    ctx.font = "26px Arial";
+    ctx.fillStyle = 'black';
+    ctx.fillText(livesDisplay, 0, 30);
+
+    var scoreDisplay = "Score: " + score;
+    ctx.clearRect(400,0,200,50);
+    ctx.font = "26px Arial";
+    ctx.fillStyle = 'black';
+    ctx.fillText(scoreDisplay, 400, 30);
+}
+
 player.prototype.update = function(dt) {
     //preventing movement off the edge of the canvas
     if (this.x < 0) {
@@ -70,9 +97,9 @@ player.prototype.update = function(dt) {
     else if (this.y > 400) {
         this.y = 400;
     }
-    if (this.y < 0) {
-        player.reset();
-    }
+    
+    player.score();
+    player.stats();
 };
 
 player.prototype.render = function() {
@@ -82,11 +109,14 @@ player.prototype.render = function() {
 //instantiating player and enemies
 var player = new player(200,400);
 var allEnemies = [];
-    
-var EnemyCount = 4;
+
+var EnemyCount = 6;
 for(var i = 0; i < EnemyCount; i++){
     allEnemies.push(new enemy(i));
 }
+
+var score = 0;
+var lives = 3;
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
