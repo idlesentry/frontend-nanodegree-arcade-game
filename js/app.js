@@ -1,17 +1,26 @@
 var enemy = function(x,y) {
-    this.x = x;
-    this.y = y;
+    //set spawn locations for enemies
+    spawnPoints = [50,140,225];
+    spawnChoice = spawnPoints[Math.floor(Math.random()*spawnPoints.length)];
+    this.x = Math.random()* -500;;
+    this.y = spawnChoice;
+
     this.sprite = 'images/enemy-bug.png';
 };
 
 enemy.prototype.update = function(dt) {
     //set enemy speed
-    this.x = this.x + (Math.floor((Math.random() * 500))) * dt;
+    speed = [25,100,350, 550];
+    speedChoice = speed[Math.floor(Math.random()*speed.length)];
 
-    //reset when reaching end of canvas
-    if (this.x > 500) {
-        this.x = 0; 
+    this.x = this.x + speedChoice * dt;
+
+    //delete enemies that reach far side of screen and spawn new enemies
+    if (allEnemies.length < 5 && this.x > 600) {
+    allEnemies.splice(this, 1);
+    allEnemies.push(new enemy(i));
     }
+    
 
     //collision detection
     for(var i = 0; i <= allEnemies.length; i++){
@@ -20,6 +29,7 @@ enemy.prototype.update = function(dt) {
         player.reset();
         }
     }
+
 };
 
 enemy.prototype.render = function() {
@@ -75,36 +85,15 @@ player.prototype.render = function() {
 //instantiating player and enemies
 var player = new player(200,400);
 
-// enemy.prototype.spawn = function() {
-//     var enemy = {
-//     "enemy1": [{
-//         "x": -100,
-//         "y": 50,
-//         "spawnCount": 0
-//     }],
-//     "enemy2": [{
-//         "x": -100,
-//         "y": 140,
-//         "spawnCount": 0
-//     }],
-//     "enemy3": [{
-//         "x": -100,
-//         "y": 225,
-//         "spawnCount": 0
-//     }]
-// };
-//     var spawnCount = [0,0,0];
-//     var spawnYlocation = [50,140,225];
-//         for(var i = 0; i <= allEnemies.length; i++) {
-//             if (spawnCount[i]= 0) {
-//             spawnCount[i] = spawnCount[i] + 1;
-//             var allEnemies[i] = new enemy(-100)
-//     }
-// }
-var enemy1 = new enemy(-100,50);
-var enemy2 = new enemy(-100,140);
-var enemy3 = new enemy(-100,225);
-var allEnemies = [enemy1, enemy2, enemy3];
+
+var allEnemies = [];
+    
+var EnemyCount = 4;
+    
+for(var i = 0; i < EnemyCount; i++){
+    allEnemies.push(new enemy(i));
+}
+    
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
