@@ -5,9 +5,20 @@ var enemy = function(x,y) {
 };
 
 enemy.prototype.update = function(dt) {
+    //set enemy speed
     this.x = this.x + (Math.floor((Math.random() * 500))) * dt;
+
+    //reset when reaching end of canvas
     if (this.x > 500) {
         this.x = 0; 
+    }
+
+    //collision detection
+    for(var i = 0; i <= allEnemies.length; i++){
+       if (player.x < this.x + 50 && player.x + 50 > this.x && player.y
+         < this.y + 0 && player.y + 100 > this.y){
+        player.reset();
+        }
     }
 };
 
@@ -35,25 +46,14 @@ player.prototype.handleInput = function (key) {
     }
 };
 
-player.prototype.collision = function() {
-for(var i = 0; i <= allEnemies.length; i++){
-       if (player.x < allEnemies[i].x + 50 && player.x + 50 > allEnemies[i].x && player.y
-         < allEnemies[i].y + 100 && player.y + 100 > allEnemies[i].y){
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-};
-
 player.prototype.reset = function() {
     player.x = 200;
     player.y = 400;
 }
 
 player.prototype.update = function(dt) {
-     if (this.x < 0) {
+    //preventing movement off the edge of the canvas
+    if (this.x < 0) {
         this.x = 0;
     }
     else if (this.x > 400) {
@@ -62,27 +62,49 @@ player.prototype.update = function(dt) {
     else if (this.y > 400) {
         this.y = 400;
     }
-
     if (this.y < 0) {
         player.reset();
     }
 
-    if (player.collision() == true) {
-        player.reset();
-    }
 };
 
 player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-
+//instantiating player and enemies
 var player = new player(200,400);
+
+// enemy.prototype.spawn = function() {
+//     var enemy = {
+//     "enemy1": [{
+//         "x": -100,
+//         "y": 50,
+//         "spawnCount": 0
+//     }],
+//     "enemy2": [{
+//         "x": -100,
+//         "y": 140,
+//         "spawnCount": 0
+//     }],
+//     "enemy3": [{
+//         "x": -100,
+//         "y": 225,
+//         "spawnCount": 0
+//     }]
+// };
+//     var spawnCount = [0,0,0];
+//     var spawnYlocation = [50,140,225];
+//         for(var i = 0; i <= allEnemies.length; i++) {
+//             if (spawnCount[i]= 0) {
+//             spawnCount[i] = spawnCount[i] + 1;
+//             var allEnemies[i] = new enemy(-100)
+//     }
+// }
 var enemy1 = new enemy(-100,50);
 var enemy2 = new enemy(-100,140);
 var enemy3 = new enemy(-100,225);
-
-var allEnemies = [enemy1,enemy2,enemy3];
+var allEnemies = [enemy1, enemy2, enemy3];
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
