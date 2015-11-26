@@ -21,11 +21,9 @@ enemy.prototype.update = function(dt) {
         allEnemies.push(new enemy(i));
     }
 
-    
-
     //collision detection
     for(var i = 0; i <= allEnemies.length; i++){
-       if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 100 > this.y){
+       if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y){
         player.reset();
         }
     }
@@ -75,7 +73,6 @@ player.prototype.update = function(dt) {
     if (this.y < 0) {
         player.reset();
     }
-
 };
 
 player.prototype.render = function() {
