@@ -10,16 +10,17 @@ var enemy = function(x,y) {
 
 enemy.prototype.update = function(dt) {
     //set enemy speed
-    speed = [25,100,350, 550];
+    speed = [25,50,75,100,350,400,550];
     speedChoice = speed[Math.floor(Math.random()*speed.length)];
 
     this.x = this.x + speedChoice * dt;
 
     //delete enemies that reach far side of screen and spawn new enemies
-    if (allEnemies.length < 5 && this.x > 600) {
-    allEnemies.splice(this, 1);
-    allEnemies.push(new enemy(i));
+    if (allEnemies.length < 5 && this.x -100 > 700) {
+        allEnemies.splice(this, 1);
+        allEnemies.push(new enemy(i));
     }
+
     
 
     //collision detection
@@ -83,16 +84,12 @@ player.prototype.render = function() {
 
 //instantiating player and enemies
 var player = new player(200,400);
-
-
 var allEnemies = [];
     
 var EnemyCount = 4;
-    
 for(var i = 0; i < EnemyCount; i++){
     allEnemies.push(new enemy(i));
 }
-    
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
