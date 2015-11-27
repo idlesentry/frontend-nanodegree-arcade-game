@@ -100,6 +100,10 @@ var Engine = (function(global) {
         allHearts.forEach(function(heart) {
             heart.update(dt);
         });
+
+        allGems.forEach(function(gem) {
+            gem.update();
+        });
     }
 
     /* This function initially draws the "game level", it will then call
@@ -161,6 +165,10 @@ var Engine = (function(global) {
 
         allHearts.forEach(function(heart) {
             heart.render();
+        });
+
+        allGems.forEach(function(gem) {
+            gem.render();
         });
     }
 
