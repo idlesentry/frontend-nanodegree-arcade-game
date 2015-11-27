@@ -1,3 +1,4 @@
+//enemy class
 var enemy = function(x,y) {
     //set spawn locations for enemies
     spawnPoints = [50,140,225];
@@ -34,13 +35,13 @@ enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+//player class
 var player = function(x,y) {
     this.x = x;
     this.y = y;
     this.sprite = 'images/char-boy.png';
 };
 
-//player functions
 player.prototype.handleInput = function (key) {
         switch (key){
         case 'left': this.x = this.x - 100;
@@ -70,6 +71,12 @@ player.prototype.death = function() {
     player.reset();
 
     lives = lives - 1;
+
+    if (lives === 0) {
+        lives = 3;
+
+        score = 0;
+    }
 }
 
 player.prototype.stats = function() {
@@ -83,9 +90,10 @@ player.prototype.stats = function() {
     ctx.clearRect(400,0,200,50);
     ctx.font = "26px Arial";
     ctx.fillStyle = 'black';
-    ctx.fillText(scoreDisplay, 400, 30);
-}
+    ctx.fillText(scoreDisplay, 380, 30);
+};
 
+//player class
 player.prototype.update = function(dt) {
     //preventing movement off the edge of the canvas
     if (this.x < 0) {
@@ -106,17 +114,58 @@ player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+//heart class
+var heart = function(x,y) {
+    var xLocation = [0,101,303,404];
+    var xChoice = xLocation[Math.floor(Math.random()*xLocation.length)];
+    var yLocation = [316,417];
+    var yChoice = yLocation[Math.floor(Math.random()*yLocation.length)];
+
+    this.x = xChoice;
+    this.y = yChoice;
+
+    this.sprite = 'images/Heart.png';
+};
+
+heart.prototype.update = function(dt) {
+    if (heartCount < 1) {
+        allHearts.splice(this, 1);
+        allHearts.push(new heart(i));
+        heartCount = heartCount + 1;
+    }
+
+    for(var i = 0; i <= allHearts.length; i++){
+       if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 80 && player.y + 80 > this.y){
+            lives = lives + 1;
+            allHearts.splice(this, 1);
+            heartCount = heartCount - 1;
+            }
+    }
+};
+
+heart.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+
 //instantiating player and enemies
 var player = new player(200,400);
-var allEnemies = [];
 
+var allEnemies = [];
 var EnemyCount = 6;
 for(var i = 0; i < EnemyCount; i++){
     allEnemies.push(new enemy(i));
 }
 
+//initializing stats
 var score = 0;
 var lives = 3;
+
+var allHearts = [];
+var heartCount = 0;
+for (var i = 0; i < 1; i++){
+    allHearts.push(new heart(i));
+}
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
