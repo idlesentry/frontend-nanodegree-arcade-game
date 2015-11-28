@@ -11,18 +11,23 @@ var enemy = function(x, y, speed) {
     this.y = spawnChoiceY;
 
     //set enemy speed
-    speed = [25,50,75,100];
+    speed = [25,50,75];
     speedChoice = speed[Math.floor(Math.random() * speed.length)];
     this.speed = speedChoice;
 
     this.sprite = 'images/enemy-bug.png';
 };
 
-enemy.prototype.update = function(dt) {
+enemy.prototype.update = function(dt, newRound, recentScore) {
     
     for (var i = 0; i < allEnemies.length; i++) {
         this.x = this.x + this.speed * dt;
+    }
 
+    //delete enemies that reach far side of screen
+    if (this.x > 700) {
+        this.x = -100;
+        allEnemies.splice(this,1);
     }
     
     //collision detection
@@ -32,22 +37,20 @@ enemy.prototype.update = function(dt) {
         }
     }
 
-    //delete enemies that reach far side of screen
-    if (this.x - 110 > 850) {
-        allEnemies.splice(this, 1);
-    }
-
-    //spawns new enemies determined by difficulty (capped at 15)
-    if (recentScore && allEnemies.length < 15){
-        difficulty = difficulty + Math.floor(score / 30);
+    //spawns new enemies determined by difficulty (which is determined by score)
+    if (recentScore && allEnemies.length < difficulty){
+        difficulty = difficulty + Math.floor(score / 35);
         recentScore = false;
+        newRound = false;
     }
 
-    setTimeout(function(){
+    for (var i = 0; i < difficulty; i++) {
         if (allEnemies.length < difficulty){
-        allEnemies.push(new enemy(i));
+            allEnemies.push(new enemy(i));
         }
-    }, 1500);
+    }
+
+    
 };
 
 enemy.prototype.render = function() {
@@ -83,6 +86,7 @@ player.prototype.round = function() {
         player.reset();
         score = score + 5;
         recentScore = true;
+        newRound = true;
     }
 };
 
@@ -95,14 +99,15 @@ player.prototype.reset = function(newRound) {
     allHearts.splice(0, allHearts.length);
     allGems.splice(0, allGems.length);
 
-    //respawn enemies upon game over
-    if (lives === 0) {
-        var allEnemies = [];
-        for (var i = 0; i < difficulty; i++) {
-            setTimeout(function(){
-            allEnemies.push(new enemy(i));
-            }, 1000);
-        }
+    //respawn enemies on round or game over
+    allEnemies.splice(0, allEnemies.length);
+
+    for (var i = 0; i < difficulty; i++) {
+        setTimeout(function(){
+            if (allEnemies.length < difficulty){
+                allEnemies.push(new enemy(i));
+            }
+        }, 1000);
     }
 
     //reset gem and heart spawns on new round
@@ -125,7 +130,7 @@ player.prototype.death = function(newRound) {
         lives = 3;
         score = 0;
 
-        allEnemies.splice(0, allEnemies.length);
+        player.reset();
     }
 };
 
@@ -226,7 +231,6 @@ recentScore = false;
 var player = new player(200, 400);
 
 var allEnemies = [];
-
 
 for (var i = 0; i < difficulty; i++) {
     setTimeout(function(){
