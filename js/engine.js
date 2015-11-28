@@ -98,7 +98,7 @@ var Engine = (function(global) {
         player.update();
 
         allHearts.forEach(function(heart) {
-            heart.update(dt);
+            heart.update();
         });
 
         allGems.forEach(function(gem) {

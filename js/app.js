@@ -68,16 +68,6 @@ player.prototype.handleInput = function(key) {
     }
 };
 
-player.prototype.reset = function() {
-    player.x = 200;
-    player.y = 400;
-
-    allHearts.splice(0, allHearts.length);
-    allGems.splice(0, allGems.length);
-
-    newRound = true;
-};
-
 player.prototype.round = function() {
     if (this.y < 0) {
         player.reset();
@@ -85,14 +75,46 @@ player.prototype.round = function() {
     }
 };
 
-player.prototype.death = function() {
-    player.reset();
+player.prototype.reset = function(newRound) {
+    player.x = 200;
+    player.y = 400;
+    newRound = true;
 
+    //remove all gems and hearts at end of round
+    allHearts.splice(0, allHearts.length);
+    allGems.splice(0, allGems.length);
+
+    //respawn enemies upon game over
+    if (lives === 0) {
+        var allEnemies = [];
+        for (var i = 0; i < 7; i++) {
+            setTimeout(function(){
+            allEnemies.push(new enemy(i));
+            }, 1000);
+        }
+    }
+
+    //reset gem and heart spawns on new round
+    if (allGems.length < 1 && allHearts <1 && newRound) {
+        allGems.push(new gem(i));
+        allHearts.push(new heart(i));
+        newRound = false;
+    }
+};
+
+player.prototype.death = function(newRound) {
+    player.x = 200;
+    player.y = 400;
+
+    newRound = true;
     lives = lives - 1;
 
+    //resets stats and clears enemies upon game over
     if (lives === 0) {
         lives = 3;
         score = 0;
+
+        allEnemies.splice(0, allEnemies.length);
     }
 };
 
@@ -110,7 +132,6 @@ player.prototype.stats = function() {
     ctx.fillText(scoreDisplay, 380, 30);
 };
 
-//player class
 player.prototype.update = function(dt) {
     //preventing movement off the edge of the canvas
     if (this.x < 0) {
@@ -133,7 +154,7 @@ player.prototype.render = function() {
 var heart = function(x, y) {
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
-    var yLocation = [134, 235, 316, 417];
+    var yLocation = [140, 235, 320, 425];
     var yChoice = yLocation[Math.floor(Math.random() * yLocation.length)];
 
     this.x = xChoice;
@@ -142,15 +163,9 @@ var heart = function(x, y) {
     this.sprite = 'images/Heart.png';
 };
 
-heart.prototype.update = function(dt) {
-
-    if (allHearts < 1 && newRound === true) {
-        allHearts.push(new heart(i));
-        newRound = false;
-    }
-
+heart.prototype.update = function() {
     for (var i = 0; i <= allHearts.length; i++) {
-        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 80 && player.y + 80 > this.y) {
+        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 75 > this.y) {
             lives = lives + 1;
             allHearts.splice(this, 1);
         }
@@ -161,6 +176,7 @@ heart.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+//gem class
 var gem = function(x, y) {
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
@@ -175,13 +191,9 @@ var gem = function(x, y) {
     this.sprite = spriteChoice;
 };
 
-gem.prototype.update = function(dt) {
-    if (allGems.length < 1) {
-        allGems.push(new gem(i));
-    }
-
+gem.prototype.update = function() {
     for (var i = 0; i <= allGems.length; i++) {
-        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 100 && player.y + 100 > this.y) {
+        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y) {
             score = score + 1;
             allGems.splice(this, 1);
         }
@@ -205,7 +217,6 @@ var allEnemies = [];
 //initializing stats
 var score = 0;
 var lives = 3;
-var newRound = true;
 
 //instantiating hearts
 var allHearts = [];
