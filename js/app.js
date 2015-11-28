@@ -1,25 +1,30 @@
 //enemy class
-var enemy = function(x, y) {
-    //set spawn locations for enemies
-    spawnPointY = [50, 140, 225];
+var enemy = function(x, y, speed) {
+    //randomize x coordinate
     spawnPointX = [-200,-300,-400,-500,-600,-700,-800];
     spawnChoiceX = spawnPointX[Math.floor(Math.random() * spawnPointX.length)];
-    spawnChoiceY = spawnPointY[Math.floor(Math.random() * spawnPointY.length)];
     this.x = spawnChoiceX;
+
+    //randomize y coordinate
+    spawnPointY = [50, 140, 225];
+    spawnChoiceY = spawnPointY[Math.floor(Math.random() * spawnPointY.length)];
     this.y = spawnChoiceY;
+
+    //set enemy speed
+    speed = [25,50,75,100];
+    speedChoice = speed[Math.floor(Math.random() * speed.length)];
+    this.speed = speedChoice;
 
     this.sprite = 'images/enemy-bug.png';
 };
 
 enemy.prototype.update = function(dt) {
-    //set enemy speed
-    speed = [1, 25, 50];
-    speedChoice = speed[Math.floor(Math.random() * speed.length)];
+    
+    for (var i = 0; i < allEnemies.length; i++) {
+        this.x = this.x + this.speed * dt;
 
-    for (var i = 0; i <= allEnemies.length; i++) {
-        this.x = this.x + speedChoice * dt;
     }
-
+    
     //collision detection
     for (var i = 0; i <= allEnemies.length; i++) {
         if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y) {
@@ -28,13 +33,18 @@ enemy.prototype.update = function(dt) {
     }
 
     //delete enemies that reach far side of screen
-    if (this.x - 110 > 750) {
+    if (this.x - 110 > 850) {
         allEnemies.splice(this, 1);
     }
 
-    //spawns new enemies if enemy number is less than 7
+    //spawns new enemies determined by difficulty (capped at 15)
+    if (recentScore && allEnemies.length < 15){
+        difficulty = difficulty + Math.floor(score / 30);
+        recentScore = false;
+    }
+
     setTimeout(function(){
-        if (allEnemies.length < 8){
+        if (allEnemies.length < difficulty){
         allEnemies.push(new enemy(i));
         }
     }, 1500);
@@ -72,6 +82,7 @@ player.prototype.round = function() {
     if (this.y < 0) {
         player.reset();
         score = score + 5;
+        recentScore = true;
     }
 };
 
@@ -87,7 +98,7 @@ player.prototype.reset = function(newRound) {
     //respawn enemies upon game over
     if (lives === 0) {
         var allEnemies = [];
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < difficulty; i++) {
             setTimeout(function(){
             allEnemies.push(new enemy(i));
             }, 1000);
@@ -177,7 +188,7 @@ heart.prototype.render = function() {
 };
 
 //gem class
-var gem = function(x, y) {
+var gem = function(x,y) {
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
     var yLocation = [122, 206, 287, 387];
@@ -195,6 +206,7 @@ gem.prototype.update = function() {
     for (var i = 0; i <= allGems.length; i++) {
         if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y) {
             score = score + 1;
+            recentScore = true;
             allGems.splice(this, 1);
         }
     }
@@ -204,19 +216,23 @@ gem.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+//initializing stats
+var score = 0;
+var lives = 3;
+var difficulty = 5;
+recentScore = false;
+
 //instantiating player and enemies
 var player = new player(200, 400);
 
 var allEnemies = [];
-    for (var i = 0; i < 7; i++) {
-        setTimeout(function(){
-        allEnemies.push(new enemy(i));
+
+
+for (var i = 0; i < difficulty; i++) {
+    setTimeout(function(){
+    allEnemies.push(new enemy(i));
     }, 1000);
 }
-
-//initializing stats
-var score = 0;
-var lives = 3;
 
 //instantiating hearts
 var allHearts = [];
