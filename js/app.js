@@ -41,7 +41,6 @@ enemy.prototype.update = function(dt, newRound, recentScore) {
     if (this.x > 700) {
         this.x = -100;
     }
-
 };
 
 enemy.prototype.render = function() {
@@ -73,6 +72,7 @@ player.prototype.handleInput = function(key) {
 };
 
 player.prototype.round = function() {
+    //requires that player reaches the water and all gems have been picked up before new round starts
     if (this.y < 0 && allGems.length === 0) {
         player.reset();
         score = score + 5;
