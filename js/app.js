@@ -1,7 +1,7 @@
 //enemy class
-var enemy = function(x, y, speed) {
+var enemy = function(x, y, speed, number) {
     //randomize x coordinate
-    spawnPointX = [-200,-300,-400,-500,-600,-700,-800];
+    spawnPointX = [-50, -83, -102, -117];
     spawnChoiceX = spawnPointX[Math.floor(Math.random() * spawnPointX.length)];
     this.x = spawnChoiceX;
 
@@ -11,46 +11,37 @@ var enemy = function(x, y, speed) {
     this.y = spawnChoiceY;
 
     //set enemy speed
-    speed = [25,50,75];
+    speed = [1, 2, 3, 4, 5, 6, 7, 8];
     speedChoice = speed[Math.floor(Math.random() * speed.length)];
-    this.speed = speedChoice;
+    this.speed = speedChoice * 8;
 
     this.sprite = 'images/enemy-bug.png';
 };
 
 enemy.prototype.update = function(dt, newRound, recentScore) {
-    
+
     for (var i = 0; i < allEnemies.length; i++) {
         this.x = this.x + this.speed * dt;
     }
 
-    //delete enemies that reach far side of screen
-    if (this.x > 700) {
-        this.x = -100;
-        allEnemies.splice(this,1);
-    }
-    
     //collision detection
-    for (var i = 0; i <= allEnemies.length; i++) {
+    for (i = 0; i <= allEnemies.length; i++) {
         if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y) {
             player.death();
         }
     }
 
     //spawns new enemies determined by difficulty (which is determined by score)
-    if (recentScore && allEnemies.length < difficulty){
-        difficulty = difficulty + Math.floor(score / 35);
+    if (recentScore && allEnemies.length < difficulty) {
+        difficulty = difficulty + Math.floor(score / 10);
         recentScore = false;
         newRound = false;
     }
 
-    for (var i = 0; i < difficulty; i++) {
-        if (allEnemies.length < difficulty){
-            allEnemies.push(new enemy(i));
-        }
+    if (this.x > 700) {
+        this.x = -100;
     }
 
-    
 };
 
 enemy.prototype.render = function() {
@@ -82,7 +73,7 @@ player.prototype.handleInput = function(key) {
 };
 
 player.prototype.round = function() {
-    if (this.y < 0) {
+    if (this.y < 0 && allGems.length === 0) {
         player.reset();
         score = score + 5;
         recentScore = true;
@@ -103,15 +94,13 @@ player.prototype.reset = function(newRound) {
     allEnemies.splice(0, allEnemies.length);
 
     for (var i = 0; i < difficulty; i++) {
-        setTimeout(function(){
-            if (allEnemies.length < difficulty){
-                allEnemies.push(new enemy(i));
-            }
-        }, 1000);
+        if (allEnemies.length < difficulty) {
+            allEnemies.push(new enemy(i));
+        }
     }
 
     //reset gem and heart spawns on new round
-    if (allGems.length < 1 && allHearts <1 && newRound) {
+    if (allGems.length < 1 && allHearts < 1 && newRound) {
         allGems.push(new gem(i));
         allHearts.push(new heart(i));
         newRound = false;
@@ -156,6 +145,8 @@ player.prototype.update = function(dt) {
         this.x = 400;
     } else if (this.y > 400) {
         this.y = 400;
+    } else if (this.y < 0 && allGems.length > 0) {
+        this.y = 40;
     }
 
     player.round();
@@ -193,7 +184,7 @@ heart.prototype.render = function() {
 };
 
 //gem class
-var gem = function(x,y) {
+var gem = function(x, y) {
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
     var yLocation = [122, 206, 287, 387];
@@ -231,11 +222,8 @@ recentScore = false;
 var player = new player(200, 400);
 
 var allEnemies = [];
-
 for (var i = 0; i < difficulty; i++) {
-    setTimeout(function(){
-    allEnemies.push(new enemy(i));
-    }, 1000);
+    allEnemies.push(new enemy());
 }
 
 //instantiating hearts
