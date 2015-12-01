@@ -1,7 +1,7 @@
 frontend-nanodegree-arcade-game
 ===============================
 **To Begin**
--open the index.html file and start playing!
+- open the index.html file and start playing!
 
 **Basic Functions**
 - move the character with the arrow keys
@@ -11,25 +11,25 @@ frontend-nanodegree-arcade-game
 - when player reaches the water and there are no more gems or hearts on the screen your score will increase by 5 and player will start again
 
 **Files**
--css/style.css
--images/char-boy.png
--images/char-cat-girl.png
--images/char-horn/girl.png
--images/char-pink-girl.png
--images/char-princess-girl.png
--images/enemy-bug.png
--images/gemBlue.png
--images/gemGreen.png
--images/gemOrange.png
--images/grass-block.png
--images/Heart.png
--images/Key.png
--images/Rock.png
--images/Selector.png
--images/Star.png
--images/stone-block.png
--js/app.js
--js/engine.js
--js/resources.js
--index.html
--README.md
+- css/style.css
+- images/char-boy.png
+- images/char-cat-girl.png
+- images/char-horn/girl.png
+- images/char-pink-girl.png
+- images/char-princess-girl.png
+- images/enemy-bug.png
+- images/gemBlue.png
+- images/gemGreen.png
+- images/gemOrange.png
+- images/grass-block.png
+- images/Heart.png
+- images/Key.png
+- images/Rock.png
+- images/Selector.png
+- images/Star.png
+- images/stone-block.png
+- js/app.js
+- js/engine.js
+- js/resources.js
+- index.html
+- README.md
