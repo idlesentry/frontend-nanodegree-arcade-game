@@ -5,10 +5,10 @@ frontend-nanodegree-arcade-game
 
 **Basic Functions**
 - move the character with the arrow keys
-- try to reach the water at the top of the screen, **but you will only be able to win if there are no more hearts or gems on the screen**
+- try to reach the water at the top of the screen, **but you will only be able to win the round if there are no more hearts or gems on the screen**
 - when player moves over a heart your lives will increase by one
 - when player moves over a gem your score will increase by one
-- when player reaches the water and there are no more gems or hearts on the screen your score will increase by 5 and player will start again
+- when player reaches the water and there are no more gems or hearts on the screen your score will increase by 5 and player will start a new round
 
 **Files**
 - css/style.css
