@@ -1,5 +1,5 @@
 //enemy class
-var enemy = function(x, y, speed, number) {
+var enemy = function(x, y, speed) {
     //randomize x coordinate
     spawnPointX = [-50, -83, -102, -117];
     spawnChoiceX = spawnPointX[Math.floor(Math.random() * spawnPointX.length)];
@@ -18,25 +18,24 @@ var enemy = function(x, y, speed, number) {
     this.sprite = 'images/enemy-bug.png';
 };
 
-enemy.prototype.update = function(dt, newRound, recentScore) {
+enemy.prototype.update = function(dt) {
 
-    for (var i = 0; i < allEnemies.length; i++) {
+    for (var i = 0, len = allEnemies.length; i < len; i++) {
         this.x = this.x + this.speed * dt;
     }
 
     //collision detection
-    for (i = 0; i <= allEnemies.length; i++) {
+    for (var i = 0, len = allEnemies.length; i < len; i++) {
         if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y) {
             player.death();
         }
     }
 
-    //spawns new enemies determined by difficulty (which is determined by score)
-    if (recentScore && allEnemies.length < difficulty) {
-        difficulty = difficulty + Math.floor(score / 10);
-        recentScore = false;
-        newRound = false;
-    }
+    // //spawns new enemies
+    // if (recentScore && allEnemies.length < 5) {
+    //     recentScore = false;
+    //     newRound = false;
+    // }
 
     if (this.x > 700) {
         this.x = -100;
@@ -74,17 +73,14 @@ player.prototype.handleInput = function(key) {
 player.prototype.round = function() {
     //requires that player reaches the water and all gems have been picked up before new round starts
     if (this.y < 0 && allGems.length === 0) {
-        player.reset();
+        this.reset();
         score = score + 5;
-        recentScore = true;
-        newRound = true;
     }
 };
 
-player.prototype.reset = function(newRound) {
-    player.x = 200;
-    player.y = 400;
-    newRound = true;
+player.prototype.reset = function() {
+    this.x = 200;
+    this.y = 400;
 
     //remove all gems and hearts at end of round
     allHearts.splice(0, allHearts.length);
@@ -93,25 +89,23 @@ player.prototype.reset = function(newRound) {
     //respawn enemies on round or game over
     allEnemies.splice(0, allEnemies.length);
 
-    for (var i = 0; i < difficulty; i++) {
-        if (allEnemies.length < difficulty) {
+    for (var i = 0; i < 5; i++) {
+        if (allEnemies.length < 5) {
             allEnemies.push(new enemy(i));
         }
     }
 
     //reset gem and heart spawns on new round
-    if (allGems.length < 1 && allHearts < 1 && newRound) {
+    if (allGems.length < 1 && allHearts < 1) {
         allGems.push(new gem(i));
         allHearts.push(new heart(i));
-        newRound = false;
     }
 };
 
-player.prototype.death = function(newRound) {
-    player.x = 200;
-    player.y = 400;
+player.prototype.death = function() {
+    this.x = 200;
+    this.y = 400;
 
-    newRound = true;
     lives = lives - 1;
 
     //resets stats and clears enemies upon game over
@@ -119,7 +113,7 @@ player.prototype.death = function(newRound) {
         lives = 3;
         score = 0;
 
-        player.reset();
+        this.reset();
     }
 };
 
@@ -149,8 +143,8 @@ player.prototype.update = function(dt) {
         this.y = 40;
     }
 
-    player.round();
-    player.stats();
+    this.round();
+    this.stats();
 };
 
 player.prototype.render = function() {
@@ -171,7 +165,7 @@ var heart = function(x, y) {
 };
 
 heart.prototype.update = function() {
-    for (var i = 0; i <= allHearts.length; i++) {
+    for (var i = 0, len = allHearts.length; i <= len; i++) {
         if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 75 > this.y) {
             lives = lives + 1;
             allHearts.splice(this, 1);
@@ -199,10 +193,9 @@ var gem = function(x, y) {
 };
 
 gem.prototype.update = function() {
-    for (var i = 0; i <= allGems.length; i++) {
+    for (var i = 0, len = allGems.length; i <= len; i++) {
         if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y) {
             score = score + 1;
-            recentScore = true;
             allGems.splice(this, 1);
         }
     }
@@ -215,14 +208,12 @@ gem.prototype.render = function() {
 //initializing stats
 var score = 0;
 var lives = 3;
-var difficulty = 5;
-recentScore = false;
 
 //instantiating player and enemies
 var player = new player(200, 400);
 
 var allEnemies = [];
-for (var i = 0; i < difficulty; i++) {
+for (var i = 0; i < 5; i++) {
     allEnemies.push(new enemy());
 }
 
