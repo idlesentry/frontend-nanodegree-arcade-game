@@ -27,12 +27,14 @@ enemy.prototype.update = function(dt) {
     //collision detection
     for (var i = 0, len = allEnemies.length; i < len; i++) {
         if (player.x < this.x + 35 && player.x + 50 > this.x && player.y < this.y + 0 && player.y + 20 > this.y) {
-            player.death();
+            player.x = 200;
+            player.y = 400;
+            lives = lives - 1;
         }
     }
 
     //resets enemies to spawn points if they reach canvas width (505) + width of image (101)
-    var enemyRun = 505 + 101;
+    var enemyRun = 505 + this.width;
     if (this.x > enemyRun) {
         this.x = -100;
     }
@@ -65,40 +67,6 @@ player.prototype.handleInput = function(key) {
             break;
     }
 };
-
-player.prototype.death = function() {
-    this.x = 200;
-    this.y = 400;
-
-    lives = lives - 1;
-
-    //resets stats and clears enemies upon game over
-    if (lives === 0) {
-        lives = 3;
-        score = 0;
-
-        this.x = 200;
-        this.y = 400;
-
-        //remove all gems and hearts
-        allItems.splice(0, allItems.length);
-
-        //respawn enemies on round
-        allEnemies.splice(0, allEnemies.length);
-
-        for (var i = 0; i < 5; i++) {
-            if (allEnemies.length < 5) {
-                allEnemies.push(new enemy(i));
-            }
-        }
-
-        //reset gem and heart spawns
-        if (allItems.length < 1) {
-            allItems.push(new item(i));
-        }
-    }
-};
-
 
 player.prototype.update = function(dt) {
     //preventing movement off the edge of the canvas
@@ -185,6 +153,32 @@ item.prototype.update = function() {
         if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y && this.sprite === 'images/Heart.png') {
             lives = lives + 1;
             allItems.splice(this, 1);
+        }
+    }
+
+    //resets stats and clears enemies upon game over
+    if (lives === 0) {
+        lives = 3;
+        score = 0;
+
+        player.x = 200;
+        player.y = 400;
+
+        //remove all gems and hearts
+        allItems.splice(0, allItems.length);
+
+        //respawn enemies on round
+        allEnemies.splice(0, allEnemies.length);
+
+        for (var i = 0; i < 5; i++) {
+            if (allEnemies.length < 5) {
+                allEnemies.push(new enemy(i));
+            }
+        }
+
+        //reset gem and heart spawns
+        if (allItems.length < 1) {
+            allItems.push(new item(i));
         }
     }
 };
