@@ -31,13 +31,9 @@ enemy.prototype.update = function(dt) {
         }
     }
 
-    // //spawns new enemies
-    // if (recentScore && allEnemies.length < 5) {
-    //     recentScore = false;
-    //     newRound = false;
-    // }
-
-    if (this.x > 700) {
+    //resets enemies to spawn points if they reach canvas width (505) + width of image (101)
+    var enemyRun = 505 + 101;
+    if (this.x > enemyRun) {
         this.x = -100;
     }
 };
@@ -69,8 +65,6 @@ player.prototype.handleInput = function(key) {
             break;
     }
 };
-
-
 
 player.prototype.death = function() {
     this.x = 200;
@@ -162,7 +156,7 @@ player.prototype.render = function() {
 
 //item class
 var item = function(x, y) {
-    
+
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
     var yLocation = [122, 206, 287, 387];
