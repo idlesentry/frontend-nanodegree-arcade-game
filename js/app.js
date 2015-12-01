@@ -34,7 +34,7 @@ enemy.prototype.update = function(dt) {
     }
 
     //resets enemies to spawn points if they reach canvas width (505) + width of image (101)
-    var enemyRun = 505 + this.width;
+    var enemyRun = 505 + 101;
     if (this.x > enemyRun) {
         this.x = -100;
     }
