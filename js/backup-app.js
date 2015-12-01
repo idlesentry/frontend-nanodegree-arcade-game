@@ -70,7 +70,37 @@ player.prototype.handleInput = function(key) {
     }
 };
 
+player.prototype.round = function() {
+    //requires that player reaches the water and all gems have been picked up before new round starts
+    if (this.y < 0 && allGems.length === 0) {
+        this.reset();
+        score = score + 5;
+    }
+};
 
+player.prototype.reset = function() {
+    this.x = 200;
+    this.y = 400;
+
+    //remove all gems and hearts at end of round
+    allHearts.splice(0, allHearts.length);
+    allGems.splice(0, allGems.length);
+
+    //respawn enemies on round or game over
+    allEnemies.splice(0, allEnemies.length);
+
+    for (var i = 0; i < 5; i++) {
+        if (allEnemies.length < 5) {
+            allEnemies.push(new enemy(i));
+        }
+    }
+
+    //reset gem and heart spawns on new round
+    if (allGems.length < 1 && allHearts < 1) {
+        allGems.push(new gem(i));
+        allHearts.push(new heart(i));
+    }
+};
 
 player.prototype.death = function() {
     this.x = 200;
@@ -83,66 +113,11 @@ player.prototype.death = function() {
         lives = 3;
         score = 0;
 
-        this.x = 200;
-        this.y = 400;
-
-        //remove all gems and hearts
-        allItems.splice(0, allItems.length);
-
-        //respawn enemies on round
-        allEnemies.splice(0, allEnemies.length);
-
-        for (var i = 0; i < 5; i++) {
-            if (allEnemies.length < 5) {
-                allEnemies.push(new enemy(i));
-            }
-        }
-
-        //reset gem and heart spawns
-        if (allItems.length < 1) {
-            allItems.push(new item(i));
-        }
+        this.reset();
     }
 };
 
-
-player.prototype.update = function(dt) {
-    //preventing movement off the edge of the canvas
-    if (this.x < 0) {
-        this.x = 0;
-    } else if (this.x > 400) {
-        this.x = 400;
-    } else if (this.y > 400) {
-        this.y = 400;
-    } else if (this.y < 0 && allItems.length > 0) {
-        this.y = 40;
-    }
-
-    //requires that player reaches the water and all gems have been picked up before new round starts
-    if (this.y < 0 && allItems.length === 0) {
-        score = score + 5;
-        this.x = 200;
-        this.y = 400;
-
-        //remove all gems and hearts at end of round
-        allItems.splice(0, allItems.length);
-
-        //respawn enemies on round or game over
-        allEnemies.splice(0, allEnemies.length);
-
-        for (var i = 0; i < 5; i++) {
-            if (allEnemies.length < 5) {
-                allEnemies.push(new enemy(i));
-            }
-        }
-
-        //reset gem and heart spawns on new round
-        if (allItems.length < 1) {
-            allItems.push(new item(i));
-        }
-    }
-
-    //displays lives and score at top of canvas
+player.prototype.stats = function() {
     livesDisplay = "Lives: " + lives;
     ctx.clearRect(0, 0, 200, 50);
     ctx.font = "26px Arial";
@@ -156,13 +131,54 @@ player.prototype.update = function(dt) {
     ctx.fillText(scoreDisplay, 380, 30);
 };
 
+player.prototype.update = function(dt) {
+    //preventing movement off the edge of the canvas
+    if (this.x < 0) {
+        this.x = 0;
+    } else if (this.x > 400) {
+        this.x = 400;
+    } else if (this.y > 400) {
+        this.y = 400;
+    } else if (this.y < 0 && allGems.length > 0) {
+        this.y = 40;
+    }
+
+    this.round();
+    this.stats();
+};
+
 player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-//item class
-var item = function(x, y) {
-    
+//heart class
+var heart = function(x, y) {
+    var xLocation = [0, 101, 303, 404];
+    var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
+    var yLocation = [140, 235, 320, 425];
+    var yChoice = yLocation[Math.floor(Math.random() * yLocation.length)];
+
+    this.x = xChoice;
+    this.y = yChoice;
+
+    this.sprite = 'images/Heart.png';
+};
+
+heart.prototype.update = function() {
+    for (var i = 0, len = allHearts.length; i <= len; i++) {
+        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 75 > this.y) {
+            lives = lives + 1;
+            allHearts.splice(this, 1);
+        }
+    }
+};
+
+heart.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+//gem class
+var gem = function(x, y) {
     var xLocation = [0, 101, 303, 404];
     var xChoice = xLocation[Math.floor(Math.random() * xLocation.length)];
     var yLocation = [122, 206, 287, 387];
@@ -171,35 +187,25 @@ var item = function(x, y) {
     this.x = xChoice;
     this.y = yChoice;
 
-    //determine randomly which item will spawn
-    var sprites = ['images/gemBlue.png', 'images/Heart.png'];
+    var sprites = ['images/gemBlue.png', 'images/gemGreen.png', 'images/gemOrange.png'];
     var spriteChoice = sprites[Math.floor(Math.random() * sprites.length)];
     this.sprite = spriteChoice;
 };
 
-item.prototype.update = function() {
-    //add to score upon collision with gem
-    for (var i = 0, len = allItems.length; i < len; i++) {
-        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y && this.sprite === 'images/gemBlue.png') {
+gem.prototype.update = function() {
+    for (var i = 0, len = allGems.length; i <= len; i++) {
+        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y) {
             score = score + 1;
-            allItems.splice(this, 1);
-        }
-    }
-
-    //all to lives upon collision with heart
-    for (var i = 0, len = allItems.length; i < len; i++) {
-        if (player.x < this.x + 75 && player.x + 75 > this.x && player.y < this.y + 75 && player.y + 50 > this.y && this.sprite === 'images/Heart.png') {
-            lives = lives + 1;
-            allItems.splice(this, 1);
+            allGems.splice(this, 1);
         }
     }
 };
 
-item.prototype.render = function() {
+gem.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// //initializing stats
+//initializing stats
 var score = 0;
 var lives = 3;
 
@@ -211,10 +217,16 @@ for (var i = 0; i < 5; i++) {
     allEnemies.push(new enemy());
 }
 
-//instantiating items
-var allItems = [];
+//instantiating hearts
+var allHearts = [];
 for (var i = 0; i < 1; i++) {
-    allItems.push(new item(i));
+    allHearts.push(new heart(i));
+}
+
+//instantiating gems
+var allGems = [];
+for (var i = 0; i < 1; i++) {
+    allGems.push(new gem(i));
 }
 
 document.addEventListener('keyup', function(e) {

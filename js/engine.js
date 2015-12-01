@@ -97,12 +97,8 @@ var Engine = (function(global) {
 
         player.update();
 
-        allHearts.forEach(function(heart) {
-            heart.update();
-        });
-
-        allGems.forEach(function(gem) {
-            gem.update();
+        allItems.forEach(function(item) {
+            item.update();
         });
     }
 
@@ -163,12 +159,8 @@ var Engine = (function(global) {
 
         player.render();
 
-        allHearts.forEach(function(heart) {
-            heart.render();
-        });
-
-        allGems.forEach(function(gem) {
-            gem.render();
+        allItems.forEach(function(item) {
+            item.render();
         });
     }
 
